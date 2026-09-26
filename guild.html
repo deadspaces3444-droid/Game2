@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гильдия — WOSB</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <a href="wosb.html" class="back-btn">← Назад</a>
+    <div class="top-right">
+        <button class="icon-btn" id="themeToggle" title="Тема">🌓</button>
+        <button class="icon-btn" id="notifBell" title="Уведомления">🔔</button>
+        <button class="icon-btn" id="adminBtn" title="Админка" hidden>⚙️</button>
+        <button class="icon-btn" id="logoutBtn" title="Выйти" hidden>🚪</button>
+    </div>
+    <div class="notif-panel" id="notifPanel" hidden></div>
+
+    <div class="guild-layout">
+        <aside class="guild-aside" id="guildSidebar">
+            <button class="side-item active" data-tab="lists">📋 Списки</button>
+            <button class="side-item" data-tab="events">📅 События</button>
+            <button class="side-item" data-tab="treasury">💰 Казна</button>
+            <button class="side-item" data-tab="pvp">⚔️ Билды ПВП</button>
+            <button class="side-item" data-tab="pb">🛡 Билды ПБ</button>
+            <button class="side-item" data-tab="ships">🚢 Корабли</button>
+            <button class="side-item" data-tab="builder">🔧 Сборка корабля</button>
+            <button class="side-item" data-tab="contacts">💬 Контакты</button>
+            <button class="side-item" data-tab="members">👥 Участники</button>
+            <button class="side-item" data-tab="tactics">📖 Тактика боя</button>
+            <button class="side-item" data-tab="chat">💭 Чат гильдии</button>
+            <button class="side-item" data-tab="applications">📝 Заявки</button>
+            <button class="side-item" data-tab="online">🟢 Онлайн</button>
+        </aside>
+
+        <main class="guild-main">
+            <div id="guildHeader" style="margin-bottom: 20px;">
+                <h1 id="guildName">Гильдия</h1>
+                <p id="guildDesc" style="color: var(--muted); margin-top: 4px;"></p>
+            </div>
+
+            <!-- Lists -->
+            <div class="tab-content active" id="tab-lists">
+                <div class="tabs">
+                    <button class="tab active" data-list="enemies">🔴 Враги</button>
+                    <button class="tab" data-list="friends">🟢 Друзья</button>
+                    <button class="tab" data-list="neutral">⚪ Нейтралитет</button>
+                    <button class="tab" data-list="personal">🟡 Не трогать</button>
+                </div>
+                <div class="flex gap-8 mb-10">
+                    <input type="text" id="listAddGuild" placeholder="Гильдия" style="flex:1;">
+                    <input type="text" id="listAddNick" placeholder="Никнейм" style="flex:1;">
+                    <button class="big-btn primary" id="listAddBtn">➕ Добавить</button>
+                </div>
+                <p class="hint">💡 Достаточно заполнить Гильдию или Никнейм.</p>
+                <h3 id="listTitle">🔴 Враги гильдии</h3>
+                <ul class="player-list" id="listItems"></ul>
+            </div>
+
+            <!-- Events -->
+            <div class="tab-content" id="tab-events">
+                <h3>📅 События гильдии</h3>
+                <div class="admin-form mb-10" id="eventForm">
+                    <input type="text" id="evTitle" placeholder="Название события">
+                    <input type="date" id="evDate">
+                    <textarea id="evDesc" placeholder="Описание"></textarea>
+                    <button class="big-btn primary" id="evAddBtn">➕ Добавить событие</button>
+                </div>
+                <div class="events-list" id="eventsList"></div>
+            </div>
+
+            <!-- Treasury -->
+            <div class="tab-content" id="tab-treasury">
+                <h3>💰 Казна гильдии</h3>
+                <div class="treasury-balance" id="treasuryBalance">0 🪙</div>
+                <div class="admin-form mt-20" style="max-width:400px;">
+                    <select id="trType"><option value="income">Доход</option><option value="expense">Расход</option></select>
+                    <input type="number" id="trAmount" placeholder="Сумма">
+                    <textarea id="trDesc" placeholder="Описание"></textarea>
+                    <button class="big-btn primary" id="trAddBtn">➕ Добавить</button>
+                </div>
+                <div class="treasury-list mt-20" id="treasuryList"></div>
+            </div>
+
+            <!-- PvP Builds -->
+            <div class="tab-content" id="tab-pvp">
+                <h3>⚔️ Билды для ПВП</h3>
+                <div class="admin-form mb-10" style="max-width:600px;">
+                    <input type="text" id="pvpShipName" placeholder="Название корабля">
+                    <textarea id="pvpUpgrades" placeholder="Апгрейды"></textarea>
+                    <textarea id="pvpGuns" placeholder="Пушки (малые, средние, большие)"></textarea>
+                    <textarea id="pvpConsumables" placeholder="Расходники"></textarea>
+                    <textarea id="pvpCrew" placeholder="Специалисты"></textarea>
+                    <button class="big-btn primary" id="pvpAddBtn">➕ Добавить билд</button>
+                </div>
+                <div class="builds-list" id="pvpList"></div>
+            </div>
+
+            <!-- PvB Builds -->
+            <div class="tab-content" id="tab-pb">
+                <h3>🛡 Билды для ПБ</h3>
+                <div class="admin-form mb-10" style="max-width:600px;">
+                    <input type="text" id="pbShipName" placeholder="Название корабля">
+                    <textarea id="pbUpgrades" placeholder="Апгрейды"></textarea>
+                    <textarea id="pbGuns" placeholder="Пушки"></textarea>
+                    <textarea id="pbConsumables" placeholder="Расходники"></textarea>
+                    <button class="big-btn primary" id="pbAddBtn">➕ Добавить билд</button>
+                </div>
+                <div class="builds-list" id="pbList"></div>
+            </div>
+
+            <!-- Ships -->
+            <div class="tab-content" id="tab-ships">
+                <h3>🚢 Справочник кораблей</h3>
+                <div class="flex gap-8 mb-10 wrap">
+                    <select id="shipFilterLevel"><option value="all">Все уровни</option><option value="1">I</option><option value="2">II</option><option value="3">III</option><option value="4">IV</option><option value="5">V</option><option value="6">VI</option><option value="7">VII</option></select>
+                    <select id="shipFilterType"><option value="all">Все типы</option><option value="fast">⚡ Быстроходные</option><option value="combat">⚔️ Боевые</option><option value="transport">📦 Транспортные</option><option value="heavy">🛡 Тяжёлые</option><option value="imperial">👑 Имперские</option></select>
+                </div>
+                <div class="ships-grid" id="shipsGrid"></div>
+            </div>
+
+            <!-- Ship Builder -->
+            <div class="tab-content" id="tab-builder">
+                <h3>🔧 Сборка корабля</h3>
+                <div class="calc-controls mb-10">
+                    <select id="guildBuildShip"><option value="">— Выберите корабль —</option></select>
+                    <button class="big-btn primary" id="guildBuildAdd">➕ Добавить компонент</button>
+                    <button class="big-btn secondary" id="guildBuildClear">🗑 Очистить</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>Компонент</th><th>Кол-во</th><th>Цена</th><th>Итого</th></tr></thead>
+                        <tbody id="guildBuildTbody"><tr><td colspan="4" class="empty">Нет компонентов</td></tr></tbody>
+                    </table>
+                </div>
+                <div class="flex" style="justify-content:space-between; margin-top:16px;">
+                    <div>Позиций: <b id="guildBuildItems">0</b></div>
+                    <div>💰 Стоимость: <span class="gold-text" id="guildBuildTotal">0</span> 🪙</div>
+                </div>
+            </div>
+
+            <!-- Contacts -->
+            <div class="tab-content" id="tab-contacts">
+                <h3>💬 Контакты гильдий</h3>
+                <div id="contactsList"></div>
+            </div>
+
+            <!-- Members -->
+            <div class="tab-content" id="tab-members">
+                <h3>👥 Список участников гильдии</h3>
+                <p class="hint">Формат: номер - ник или просто ник, каждый с новой строки.</p>
+                <textarea id="membersText" style="width:100%; min-height:200px;" placeholder="1 - Ник1&#10;2 - Ник2"></textarea>
+                <button class="big-btn primary mt-10" id="saveMembers">💾 Сохранить участников</button>
+                <h3 style="margin-top: 20px;">👑 Адмиралы</h3>
+                <textarea id="adminsText" style="width:100%; min-height:100px;" placeholder="Ник адмирала"></textarea>
+                <button class="big-btn primary mt-10" id="saveAdmins">💾 Сохранить адмиралов</button>
+            </div>
+
+            <!-- Tactics -->
+            <div class="tab-content" id="tab-tactics">
+                <h3>📖 Тактика боя</h3>
+                <div id="tacticsList"></div>
+            </div>
+
+            <!-- Chat -->
+            <div class="tab-content" id="tab-chat">
+                <h3>💭 Чат гильдии</h3>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" placeholder="Сообщение...">
+                        <button class="big-btn primary" id="chatSend">➤</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications -->
+            <div class="tab-content" id="tab-applications">
+                <h3>📝 Заявки в гильдию</h3>
+                <div id="applicationsList"></div>
+            </div>
+
+            <!-- Online -->
+            <div class="tab-content" id="tab-online">
+                <h3>🟢 Кто сейчас на сайте</h3>
+                <button class="big-btn primary mb-10" id="onlineRefresh">🔄 Обновить</button>
+                <div class="online-list" id="onlineList"></div>
+            </div>
+        </main>
+    </div>
+
+    <div class="site-footer">
+        <span class="footer-left">Mist Time — Сергеев С.В</span>
+        <span class="footer-right">v3.0.0</span>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/guild.js"></script>
+</body>
+</html>

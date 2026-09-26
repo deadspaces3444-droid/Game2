@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель — WOSB</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <a href="wosb.html" class="back-btn">← На главную</a>
+    <div class="top-right">
+        <button class="icon-btn" id="themeToggle" title="Тема">🌓</button>
+        <button class="icon-btn" id="exportBtn" title="Экспорт данных">📤</button>
+        <button class="icon-btn" id="importBtn" title="Импорт данных">📥</button>
+        <button class="icon-btn" id="resetBtn" title="Сброс данных" style="color:var(--red);">🔄</button>
+    </div>
+
+    <div class="admin-layout">
+        <aside class="admin-aside" id="adminSidebar">
+            <button class="side-item active" data-section="guilds">🏰 Гильдии</button>
+            <button class="side-item" data-section="alliances">🤝 Союзы</button>
+            <button class="side-item" data-section="games">🎮 Игры</button>
+            <button class="side-item" data-section="ships">🚢 Корабли</button>
+            <button class="side-item" data-section="pricing">💲 Ценообразование</button>
+            <button class="side-item" data-section="recipes">🔨 Постройка</button>
+            <button class="side-item" data-section="factions">⚓ Фракции и порты</button>
+            <button class="side-item" data-section="map">🗺 Карта</button>
+            <button class="side-item" data-section="partners">🤝 Партнёры</button>
+            <button class="side-item" data-section="faq">❓ FAQ</button>
+            <button class="side-item" data-section="tactics">📖 Тактика</button>
+            <button class="side-item" data-section="online">👥 Онлайн</button>
+            <button class="side-item" data-section="admins">👑 Админы</button>
+            <button class="side-item" data-section="settings">⚙️ Настройки</button>
+        </aside>
+
+        <main class="admin-main">
+            <!-- Guilds Management -->
+            <div class="admin-section active" id="sec-guilds">
+                <h2>🏰 Управление гильдиями</h2>
+                <div class="admin-form" style="max-width:600px;">
+                    <div class="admin-form-row">
+                        <div><label>Гильдия</label><select id="adminClanSelect"></select></div>
+                        <div><label>Игра</label><select id="adminClanGame"></select></div>
+                        <div><label>Союз</label><select id="adminClanAlliance"><option value="">— Нет —</option></select></div>
+                    </div>
+                    <div class="admin-form-row">
+                        <div><label>Название</label><input type="text" id="adminClanName"></div>
+                        <div><label>👑 Ник главы</label><input type="text" id="adminClanLeader"></div>
+                    </div>
+                    <div><label>Описание</label><textarea id="adminClanDesc"></textarea></div>
+                    <div><label>Правила</label><textarea id="adminClanRules"></textarea></div>
+                    <div><label>Новости</label><textarea id="adminClanNews"></textarea></div>
+                    <div class="admin-form-row">
+                        <div><label>Пароль гильдии</label><input type="text" id="adminClanPass"></div>
+                        <div><label>Админ-пароль</label><input type="text" id="adminClanAdminPass"></div>
+                    </div>
+                    <div class="admin-form-row">
+                        <div><label>Discord</label><input type="text" id="adminClanDiscord"></div>
+                        <div><label>Телефон</label><input type="text" id="adminClanPhone"></div>
+                    </div>
+                    <div class="admin-form-row">
+                        <div><label>Флаг</label><select id="adminClanFlag"><option value="neutral">🏴 Нейтральный</option><option value="pirate">🏴‍☠️ Пират</option><option value="spain">🇪🇸 Испания</option><option value="england">🏴 Англия</option><option value="russia">🇷🇺 Россия</option></select></div>
+                        <div><label>Ссылка на логотип</label><input type="text" id="adminClanImage" placeholder="URL"></div>
+                    </div>
+                    <div><label>👑 Список адмиралов</label><textarea id="adminClanAdmins" placeholder="Один ник на строку"></textarea></div>
+                    <div><label>👥 Список участников</label><textarea id="adminClanMembers" placeholder="Один ник на строку"></textarea></div>
+                    <div class="flex gap-8">
+                        <button class="big-btn primary" id="saveClanBtn">💾 Сохранить</button>
+                        <button class="big-btn success" id="newClanBtn">➕ Новая гильдия</button>
+                        <button class="big-btn danger" id="deleteClanBtn">🗑 Удалить гильдию</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alliances -->
+            <div class="admin-section" id="sec-alliances">
+                <h2>🤝 Союзы</h2>
+                <div class="admin-form mb-20" style="max-width:400px;">
+                    <h3>➕ Новый союз</h3>
+                    <div><label>ID (латиница)</label><input type="text" id="newAllianceId"></div>
+                    <div><label>Название</label><input type="text" id="newAllianceName"></div>
+                    <div><label>Описание</label><textarea id="newAllianceDesc"></textarea></div>
+                    <button class="big-btn primary" id="createAllianceBtn">➕ Создать</button>
+                </div>
+                <div class="admin-list" id="allianceAdminList"></div>
+            </div>
+
+            <!-- Games -->
+            <div class="admin-section" id="sec-games">
+                <h2>🎮 Управление играми</h2>
+                <div class="admin-form mb-20" style="max-width:400px;">
+                    <h3>➕ Добавить игру</h3>
+                    <div><label>ID (латиница)</label><input type="text" id="newGameId"></div>
+                    <div><label>Название</label><input type="text" id="newGameName"></div>
+                    <div><label>Логотип (эмодзи)</label><input type="text" id="newGameLogo" placeholder="🎮"></div>
+                    <button class="big-btn primary" id="addGameBtn">➕ Добавить</button>
+                </div>
+                <div class="admin-list" id="gamesAdminList"></div>
+            </div>
+
+            <!-- Ships -->
+            <div class="admin-section" id="sec-ships">
+                <h2>🚢 Справочник кораблей</h2>
+                <div class="admin-form mb-20" style="max-width:500px;">
+                    <h3>➕ Добавить корабль</h3>
+                    <div class="admin-form-row">
+                        <div><label>Название</label><input type="text" id="newShipName"></div>
+                        <div><label>Уровень</label><select id="newShipLevel"><option value="1">I</option><option value="2">II</option><option value="3">III</option><option value="4">IV</option><option value="5">V</option><option value="6">VI</option><option value="7">VII</option></select></div>
+                    </div>
+                    <div class="admin-form-row">
+                        <div><label>Тип</label><select id="newShipType"><option value="fast">⚡ Быстроходный</option><option value="combat">⚔️ Боевой</option><option value="transport">📦 Транспорт</option><option value="heavy">🛡 Тяжёлый</option><option value="imperial">👑 Имперский</option></select></div>
+                        <div><label>Прочность</label><input type="number" id="newShipDur" value="500"></div>
+                        <div><label>Орудия</label><input type="number" id="newShipGuns" value="4"></div>
+                    </div>
+                    <button class="big-btn primary" id="addShipBtn">➕ Добавить корабль</button>
+                </div>
+                <div class="ships-grid" id="shipsAdminGrid"></div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="admin-section" id="sec-pricing">
+                <h2>💲 Настройки ценообразования</h2>
+                <h3>Базовые цены на ресурсы</h3>
+                <div class="admin-form mb-20" style="max-width:500px;">
+                    <h3>➕ Добавить ресурс</h3>
+                    <div class="admin-form-row">
+                        <div><label>ID (латиница)</label><input type="text" id="newResId"></div>
+                        <div><label>Название</label><input type="text" id="newResName"></div>
+                    </div>
+                    <div class="admin-form-row">
+                        <div><label>Цена (G)</label><input type="number" id="newResPrice" value="10"></div>
+                        <div><label>Эмодзи</label><input type="text" id="newResEmoji" placeholder="📦"></div>
+                        <div><label>Группа</label><select id="newResGroup"><option value="basic">Базовая</option><option value="precious">Драгоценная</option><option value="ship">Корабельная</option><option value="weapon">Оружейная</option><option value="food">Пища</option></select></div>
+                    </div>
+                    <button class="big-btn primary" id="addResBtn">➕ Добавить ресурс</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>Ресурс</th><th>Группа</th><th>Цена</th><th>Действия</th></tr></thead>
+                        <tbody id="pricingAdminTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recipes -->
+            <div class="admin-section" id="sec-recipes">
+                <h2>🔨 Постройка кораблей</h2>
+                <h3>🚢 Рецепт корабля</h3>
+                <div class="admin-form mb-20" style="max-width:500px;">
+                    <div><label>Корабль</label><select id="recipeShipSelect"></select></div>
+                    <div><label>Ресурс</label><select id="recipeResSelect"></select></div>
+                    <div class="admin-form-row">
+                        <div><label>Количество</label><input type="number" id="recipeQty" value="1" min="1"></div>
+                        <button class="big-btn primary" id="addRecipeBtn">➕ Добавить ресурс</button>
+                        <button class="big-btn danger" id="clearRecipeBtn">🗑 Очистить</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead><tr><th>Ресурс</th><th>Кол-во</th><th>Действие</th></tr></thead>
+                            <tbody id="recipeTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <h3>💸 Скидки</h3>
+                <div class="admin-form mb-20" style="max-width:500px;">
+                    <div class="admin-form-row">
+                        <div><label>Название</label><input type="text" id="newDiscountName"></div>
+                        <div><label>Процент</label><input type="number" id="newDiscountPercent" value="10" min="0" max="100"></div>
+                    </div>
+                    <button class="big-btn primary" id="addDiscountBtn">➕ Добавить скидку</button>
+                </div>
+                <div class="admin-list" id="discountsList"></div>
+            </div>
+
+            <!-- Factions & Ports -->
+            <div class="admin-section" id="sec-factions">
+                <h2>⚓ Фракции и порты</h2>
+                <h3>🏴 Фракции</h3>
+                <div class="admin-list mb-20" id="factionsAdminList"></div>
+                <h3>➕ Добавить порт</h3>
+                <div class="admin-form mb-20" style="max-width:500px;">
+                    <div class="admin-form-row">
+                        <div><label>Название</label><input type="text" id="newPortName"></div>
+                        <div><label>Тип</label><select id="newPortType"><option value="military">Военный</option><option value="trade">Торговый</option><option value="pirate">Пиратский</option><option value="neutral">Нейтральный</option></select></div>
+                    </div>
+                    <div class="admin-form-row">
+                        <div><label>Фракция</label><select id="newPortFaction"></select></div>
+                        <div><label>Регион</label><input type="text" id="newPortRegion"></div>
+                    </div>
+                    <button class="big-btn primary" id="addPortBtn">➕ Добавить порт</button>
+                </div>
+                <div class="admin-list" id="portsAdminList"></div>
+            </div>
+
+            <!-- Map -->
+            <div class="admin-section" id="sec-map">
+                <h2>🗺 Настройка карты</h2>
+                <div class="admin-form" style="max-width:500px;">
+                    <div><label>Заголовок карты</label><input type="text" id="mapTitle"></div>
+                    <div><label>📍 Детальная карта (URL)</label><input type="text" id="mapDetailedUrl" placeholder="URL картинки с маркерами"></div>
+                    <div><label>🧭 Чистая карта (URL)</label><input type="text" id="mapCleanUrl" placeholder="URL картинки без маркеров"></div>
+                    <div><label>По умолчанию показывать</label><select id="mapDefaultView"><option value="detailed">С маркерами</option><option value="clean">Чистую</option></select></div>
+                    <div><label>Примечание под картой</label><input type="text" id="mapHint"></div>
+                    <button class="big-btn primary" id="saveMapBtn">💾 Сохранить карту</button>
+                </div>
+            </div>
+
+            <!-- Partners -->
+            <div class="admin-section" id="sec-partners">
+                <h2>🤝 Партнёры</h2>
+                <div class="admin-form mb-20" style="max-width:500px;">
+                    <h3>➕ Добавить партнёра</h3>
+                    <div><label>Название *</label><input type="text" id="newPartnerName"></div>
+                    <div><label>Ссылка *</label><input type="text" id="newPartnerUrl"></div>
+                    <div><label>Описание</label><textarea id="newPartnerDesc"></textarea></div>
+                    <div><label>Логотип (эмодзи)</label><input type="text" id="newPartnerLogo" placeholder="🤝"></div>
+                    <button class="big-btn primary" id="addPartnerBtn">➕ Добавить партнёра</button>
+                </div>
+                <div class="admin-list" id="partnersAdminList"></div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="admin-section" id="sec-faq">
+                <h2>❓ FAQ</h2>
+                <div class="admin-form mb-20" style="max-width:500px;">
+                    <h3>➕ Добавить вопрос</h3>
+                    <div><label>Вопрос</label><input type="text" id="newFaqQ"></div>
+                    <div><label>Ответ</label><textarea id="newFaqA"></textarea></div>
+                    <button class="big-btn primary" id="addFaqBtn">➕ Добавить</button>
+                </div>
+                <div class="admin-list" id="faqAdminList"></div>
+            </div>
+
+            <!-- Tactics -->
+            <div class="admin-section" id="sec-tactics">
+                <h2>📖 Тактика боя</h2>
+                <div class="admin-form mb-20" style="max-width:500px;">
+                    <h3>➕ Добавить раздел</h3>
+                    <div><label>ID (латиница)</label><input type="text" id="newTacticId"></div>
+                    <div><label>Заголовок</label><input type="text" id="newTacticTitle"></div>
+                    <div><label>Иконка</label><input type="text" id="newTacticIcon" placeholder="📖"></div>
+                    <div><label>Содержимое (HTML)</label><textarea id="newTacticContent" style="min-height:120px;"></textarea></div>
+                    <button class="big-btn primary" id="addTacticBtn">➕ Добавить раздел</button>
+                </div>
+                <div class="admin-list" id="tacticsAdminList"></div>
+            </div>
+
+            <!-- Online -->
+            <div class="admin-section" id="sec-online">
+                <h2>👥 Кто сейчас на сайте</h2>
+                <button class="big-btn primary mb-10" id="adminOnlineRefresh">🔄 Обновить</button>
+                <div class="online-list" id="adminOnlineList"></div>
+            </div>
+
+            <!-- Admins -->
+            <div class="admin-section" id="sec-admins">
+                <h2>👑 Админы сайта</h2>
+                <p class="hint">👑 Владелец — полный доступ. ⚙️ Админ / 🎖 Глава Клана с привязкой редактируют только свою гильдию.</p>
+                <h3>➕ Добавить админа</h3>
+                <div class="admin-form mb-20" style="max-width:500px;">
+                    <div class="admin-form-row">
+                        <div><label>Никнейм *</label><input type="text" id="newAdminNick"></div>
+                        <div><label>Email *</label><input type="text" id="newAdminEmail"></div>
+                    </div>
+                    <div class="admin-form-row">
+                        <div><label>Пароль *</label><input type="text" id="newAdminPass"></div>
+                        <div><label>Роль *</label><select id="newAdminRole"><option value="owner">👑 Владелец</option><option value="admin">⚙️ Админ</option><option value="mod">🎖 Глава Клана</option></select></div>
+                    </div>
+                    <div><label>Привязка к гильдии</label><select id="newAdminClan"><option value="">— Без привязки —</option></select></div>
+                    <button class="big-btn primary" id="addAdminBtn">➕ Создать админа</button>
+                </div>
+                <div class="admin-list" id="siteAdminsList"></div>
+            </div>
+
+            <!-- Settings -->
+            <div class="admin-section" id="sec-settings">
+                <h2>⚙️ Настройки сайта</h2>
+                <div class="admin-form" style="max-width:500px;">
+                    <h3>📰 Новости ВКонтакте</h3>
+                    <div><label>Ссылка на сообщество</label><input type="text" id="settingsVk" placeholder="worldofseabattle"></div>
+                    <h3>📨 Discord-оповещения</h3>
+                    <div><label>Вебхук URL</label><input type="text" id="settingsWebhook" placeholder="https://discord.com/api/webhooks/..."></div>
+                    <button class="big-btn primary" id="saveSettingsBtn">💾 Сохранить</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="site-footer">
+        <span class="footer-left">Mist Time — Сергеев С.В</span>
+        <span class="footer-right">v3.0.0</span>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

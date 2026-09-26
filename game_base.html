@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ game.name }} — Гильдии</title>
+    <link rel="stylesheet" href="/static/css/game.css">
+    <link rel="stylesheet" href="/static/css/{{ game.css }}">
+</head>
+<body>
+
+<!-- ============ ВЕРХНЯЯ ПАНЕЛЬ ============ -->
+<div class="top-bar">
+    <a href="/" class="back-to-landing" title="К выбору игры">
+        <span class="back-icon">←</span>
+        <span class="back-text">Игры</span>
+    </a>
+    <div class="game-badge" style="--game-color: {{ game.color }}">
+        <span class="game-badge-icon">{{ game.icon }}</span>
+        <span class="game-badge-name">{{ game.short }}</span>
+    </div>
+    <div class="top-actions">
+        <button id="themeToggle" class="top-btn" title="Тема">🌓</button>
+        <button id="notifBtn" class="top-btn" title="Уведомления">🔔<span id="notifCount">0</span></button>
+        <button id="adminBtn" class="top-btn" title="Админка" hidden>⚙️</button>
+        <button id="loginBtn" class="top-btn">🔐 Админ</button>
+        <button id="logoutBtn" class="top-btn" hidden>🚪 Выйти</button>
+    </div>
+</div>
+
+<!-- ============ ЭКРАН: ГЛАВНАЯ ============ -->
+<div id="screen-home" class="screen">
+    <div class="home-wrap">
+        <!-- Hero -->
+        <div class="hero-video">
+            <video autoplay muted loop playsinline preload="metadata">
+                <source src="/static/{{ game.hero_video }}" type="video/mp4">
+            </video>
+            <div class="hero-overlay"></div>
+            <div class="hero-text">
+                <h1>⚔️ {{ game.name }}</h1>
+                <p>Выбери свою гильдию, чтобы ознакомиться с правилами</p>
+            </div>
+        </div>
+
+        <!-- Гильдии -->
+        <div class="section-header">
+            <h2 class="section-title">Гильдии</h2>
+            <button id="addClanBtn" class="clans-add-btn" hidden>➕</button>
+        </div>
+        <div class="clan-grid" id="clanGrid">
+            <div class="empty">Загрузка гильдий…</div>
+        </div>
+
+        <!-- Карта мира -->
+        <h2 class="section-title">🗺 Карта мира</h2>
+        <div class="map-container" id="mapContainer">
+            <button class="map-toggle-btn active" data-view="detailed">📍 С маркерами</button>
+            <button class="map-toggle-btn" data-view="clean">🧭 Чистая</button>
+            <div class="map-preview" id="mapPreview">
+                <img src="/static/images/map/detailed.jpg" alt="Карта" id="mapImg">
+            </div>
+            <p class="map-hint">🔍 Нажми, чтобы открыть на весь экран</p>
+        </div>
+
+        <!-- Стоимость постройки -->
+        <h2 class="section-title">🔨 Стоимость постройки корабля</h2>
+        <div class="ship-cost-container">
+            <div class="ship-cost-header">
+                <label>🚢 Корабль: <select id="costShipSelect"></select></label>
+                <label>⚓ Город: <select id="costCitySelect"></select></label>
+                <label>🏴 Фракция: <select id="costFactionSelect"></select></label>
+            </div>
+            <div id="shipCostResult">
+                <p class="empty">Выберите корабль, чтобы увидеть стоимость постройки.</p>
+            </div>
+        </div>
+
+        <!-- Гильдейский рынок -->
+        <h2 class="section-title">🪙 Гильдейский рынок</h2>
+        <div class="market-container">
+            <div class="market-header">
+                <h3>📣 Биржа заявок</h3>
+                <span id="myTradesBadge">👤 Мои: 0</span>
+            </div>
+            <div class="market-stats">
+                <div class="market-stat">🛒 Золото на покупку: <b id="buyCount">0</b> заявок</div>
+                <div class="market-stat">💰 Золото на продажу: <b id="sellCount">0</b> заявок</div>
+            </div>
+            <div class="market-board" id="marketBoard">
+                <p class="empty">Загрузка заявок…</p>
+            </div>
+        </div>
+
+        <!-- Ресурсы -->
+        <h2 class="section-title">📦 Ресурсы — справочник цен</h2>
+        <div class="resources-container">
+            <div class="resources-header">
+                <h3>Базовые цены на ресурсы</h3>
+                <button id="resRefreshBtn" class="res-refresh">🔄</button>
+            </div>
+            <div class="res-table-wrap">
+                <table class="res-table" id="resTable">
+                    <thead><tr><th>Ресурс</th><th>Цена</th><th>Обновлено</th></tr></thead>
+                    <tbody><tr><td colspan="3" class="empty">Загрузка…</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Калькулятор сборки -->
+        <h2 class="section-title">🔧 Калькулятор сборки корабля</h2>
+        <div class="calc-container">
+            <div class="calc-header">
+                <label>🎯 Собираю корабль: <select id="calcShipSelect"></select></label>
+                <button id="calcAddBtn" class="calc-btn">➕ Добавить компонент</button>
+                <button id="calcClearBtn" class="calc-btn danger">🗑 Очистить</button>
+            </div>
+            <div class="calc-table-wrap">
+                <table class="calc-table" id="calcTable">
+                    <thead><tr><th>Компонент</th><th>Кол-во</th><th>Средняя цена</th><th>Итого</th></tr></thead>
+                    <tbody><tr><td colspan="4" class="empty">Добавьте компоненты</td></tr></tbody>
+                </table>
+            </div>
+            <div class="calc-footer">
+                <span>Позиций: <b id="calcItems">0</b></span>
+                <span>Найдено цен: <b id="calcPrices">0 / 0</b></span>
+                <span>💰 Средняя стоимость: <b id="calcTotal">0</b> 🪙</span>
+            </div>
+        </div>
+
+        <!-- Заявка в гильдию -->
+        <h2 class="section-title">📝 Подать заявку в гильдию</h2>
+        <div class="apply-section">
+            <p class="apply-hint">Заполни форму — совет рассмотрит заявку и свяжется с тобой.</p>
+            <div class="apply-form">
+                <input type="text" id="applyNickname" placeholder="Никнейм *" class="apply-input">
+                <input type="text" id="applyAge" placeholder="Возраст" class="apply-input">
+                <input type="text" id="applyExperience" placeholder="Опыт в игре" class="apply-input">
+                <input type="text" id="applyContact" placeholder="Связь (Discord / Telegram)" class="apply-input">
+                <select id="applyClanSelect" class="apply-input"><option>Какая гильдия интересует</option></select>
+                <textarea id="applyReason" placeholder="Почему хотите вступить? *" class="apply-input"></textarea>
+                <button id="applySubmitBtn" class="big-btn primary">📨 Отправить заявку</button>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <h2 class="section-title">❓ Часто задаваемые вопросы</h2>
+        <div class="faq-container" id="faqContainer">
+            <p class="empty">Загрузка…</p>
+        </div>
+
+        <!-- Партнёры -->
+        <h2 class="section-title">🤝 Партнёры и Реклама</h2>
+        <div class="partners-container" id="partnersContainer">
+            <p class="empty">Загрузка…</p>
+        </div>
+
+        <!-- Благодарности -->
+        <div class="thanks-section">
+            <p>Спасибо всем участникам гильдий за активность и поддержку проекта.</p>
+            <p>Этот сайт — для вас. ❤️</p>
+            <p class="author">Mist Time — Сергеев С.В</p>
+        </div>
+    </div>
+</div>
+
+<!-- ============ ЭКРАН: ГИЛЬДИЯ ============ -->
+<div id="screen-clan" class="screen" hidden>
+    <div class="clan-layout">
+        <aside class="sidebar">
+            <button class="side-item active" data-section="lists"><span class="side-ico">📋</span><span>Списки</span></button>
+            <button class="side-item" data-section="events"><span class="side-ico">📅</span><span>События</span></button>
+            <button class="side-item" data-section="treasury"><span class="side-ico">💰</span><span>Казна</span></button>
+            <button class="side-item" data-section="pvp"><span class="side-ico">⚔️</span><span>Билды ПВП</span></button>
+            <button class="side-item" data-section="pb"><span class="side-ico">🛡</span><span>Билды ПБ</span></button>
+            <button class="side-item" data-section="ships"><span class="side-ico">🚢</span><span>Корабли</span></button>
+            <button class="side-item" data-section="build"><span class="side-ico">🔧</span><span>Сборка корабля</span></button>
+            <button class="side-item" data-section="contacts"><span class="side-ico">💬</span><span>Контакты</span></button>
+            <button class="side-item" data-section="members"><span class="side-ico">👥</span><span>Участники</span></button>
+            <button class="side-item" data-section="tactics"><span class="side-ico">📖</span><span>Тактика боя</span></button>
+            <button class="side-item" data-section="chat"><span class="side-ico">💭</span><span>Чат гильдии</span></button>
+            <button class="side-item" data-section="online"><span class="side-ico">🟢</span><span>Онлайн</span></button>
+        </aside>
+        <main class="clan-main">
+            <header class="clan-header">
+                <button id="clanBackBtn" class="back-btn">← Назад</button>
+                <div class="clan-icon-wrap" id="clanIconWrap"></div>
+                <h2 id="clanTitle" class="clan-title">—</h2>
+                <button id="clanLeaveBtn" class="top-btn">🚪 Выйти</button>
+            </header>
+
+            <!-- Списки -->
+            <div class="clan-section active" id="section-lists">
+                <div class="tabs">
+                    <button class="tab active" data-tab="enemies">🔴 Враги</button>
+                    <button class="tab" data-tab="friends">🟢 Друзья</button>
+                    <button class="tab" data-tab="neutral">⚪ Нейтралитет</button>
+                    <button class="tab" data-tab="personal">🟡 Не трогать</button>
+                </div>
+                <div class="tab-content active" id="tab-enemies">
+                    <div class="list-container" id="list-enemies"></div>
+                </div>
+                <div class="tab-content" id="tab-friends"><div class="list-container" id="list-friends"></div></div>
+                <div class="tab-content" id="tab-neutral"><div class="list-container" id="list-neutral"></div></div>
+                <div class="tab-content" id="tab-personal"><div class="list-container" id="list-personal"></div></div>
+                <div class="list-add-form">
+                    <input type="text" id="playerGuild" placeholder="Гильдия" class="list-input">
+                    <input type="text" id="nickname" placeholder="Никнейм" class="list-input">
+                    <input type="text" id="faction" placeholder="Фракция" class="list-input">
+                    <input type="text" id="note" placeholder="Примечание" class="list-input">
+                    <button id="addBtn" class="big-btn primary">➕ Добавить</button>
+                </div>
+            </div>
+
+            <!-- События -->
+            <div class="clan-section" id="section-events">
+                <h3>📅 События гильдии</h3>
+                <div id="eventsList"><p class="empty">Загрузка…</p></div>
+            </div>
+
+            <!-- Казна -->
+            <div class="clan-section" id="section-treasury">
+                <h3>💰 Казна гильдии</h3>
+                <p>Текущий баланс: <b id="treasuryBalance">0</b></p>
+                <div id="treasuryList"><p class="empty">Загрузка…</p></div>
+            </div>
+
+            <!-- Билды ПВП -->
+            <div class="clan-section" id="section-pvp">
+                <h3>⚔️ Билды для ПВП</h3>
+                <div id="buildsPvp"><p class="empty">Загрузка…</p></div>
+            </div>
+
+            <!-- Билды ПБ -->
+            <div class="clan-section" id="section-pb">
+                <h3>🛡 Билды для ПБ</h3>
+                <div id="buildsPb"><p class="empty">Загрузка…</p></div>
+            </div>
+
+            <!-- Корабли -->
+            <div class="clan-section" id="section-ships">
+                <h3>🚢 Справочник кораблей</h3>
+                <div id="shipsList"><p class="empty">Загрузка…</p></div>
+            </div>
+
+            <!-- Сборка корабля -->
+            <div class="clan-section" id="section-build">
+                <h3>🔧 Сборка корабля</h3>
+                <div class="calc-container">
+                    <div class="calc-header">
+                        <label>🎯 Собираю корабль: <select id="clanCalcShipSelect"></select></label>
+                        <button id="clanCalcAddBtn" class="calc-btn">➕ Добавить компонент</button>
+                        <button id="clanCalcClearBtn" class="calc-btn danger">🗑 Очистить</button>
+                    </div>
+                    <div class="calc-table-wrap">
+                        <table class="calc-table" id="clanCalcTable">
+                            <thead><tr><th>Компонент</th><th>Кол-во</th><th>Средняя цена</th><th>Итого</th></tr></thead>
+                            <tbody><tr><td colspan="4" class="empty">Добавьте компоненты</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="calc-footer">
+                        <span>Позиций: <b id="clanCalcItems">0</b></span>
+                        <span>💰 Средняя стоимость: <b id="clanCalcTotal">0</b> 🪙</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Контакты -->
+            <div class="clan-section" id="section-contacts">
+                <h3>💬 Контакты гильдий</h3>
+                <div id="contactsList"><p class="empty">Загрузка…</p></div>
+            </div>
+
+            <!-- Участники -->
+            <div class="clan-section" id="section-members">
+                <h3>👥 Список участников гильдии</h3>
+                <div id="membersList"><p class="empty">Загрузка…</p></div>
+            </div>
+
+            <!-- Тактика -->
+            <div class="clan-section" id="section-tactics">
+                <h3>📖 Тактика боя</h3>
+                <div id="tacticsList"><p class="empty">Загрузка…</p></div>
+            </div>
+
+            <!-- Чат -->
+            <div class="clan-section" id="section-chat">
+                <h3>💭 Чат гильдии</h3>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" placeholder="Сообщение…" class="chat-input-field">
+                        <button id="chatSendBtn" class="big-btn primary">➤</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Онлайн -->
+            <div class="clan-section" id="section-online">
+                <h3>🟢 Кто сейчас на сайте</h3>
+                <button id="onlineRefreshBtn" class="big-btn">🔄 Обновить</button>
+                <div id="onlineList"><p class="empty">Нажмите «Обновить»</p></div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- ============ ЭКРАН: АДМИНКА ============ -->
+<div id="screen-admin" class="screen" hidden>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-brand">⚙️ Админ-панель</div>
+            <nav class="admin-nav">
+                <button class="admin-nav-item active" data-panel="clans"><span>🏰</span><span>Гильдии</span></button>
+                <button class="admin-nav-item" data-panel="alliances"><span>🤝</span><span>Союзы</span></button>
+                <button class="admin-nav-item" data-panel="games"><span>🎮</span><span>Игры</span></button>
+                <button class="admin-nav-item" data-panel="ships"><span>🚢</span><span>Корабли</span></button>
+                <button class="admin-nav-item" data-panel="resources"><span>💲</span><span>Ценообразование</span></button>
+                <button class="admin-nav-item" data-panel="shipcost"><span>🔨</span><span>Постройка</span></button>
+                <button class="admin-nav-item" data-panel="ports"><span>⚓</span><span>Фракции и порты</span></button>
+                <button class="admin-nav-item" data-panel="map"><span>🗺</span><span>Карта</span></button>
+                <button class="admin-nav-item" data-panel="partners"><span>🤝</span><span>Партнёры</span></button>
+                <button class="admin-nav-item" data-panel="faq"><span>❓</span><span>FAQ</span></button>
+                <button class="admin-nav-item" data-panel="tactics"><span>📖</span><span>Тактика</span></button>
+                <button class="admin-nav-item" data-panel="online"><span>👥</span><span>Онлайн</span></button>
+                <button class="admin-nav-item" data-panel="admins"><span>👑</span><span>Админы</span></button>
+                <button class="admin-nav-item" data-panel="settings"><span>⚙️</span><span>Настройки</span></button>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <button id="adminBackHome" class="back-btn">← На главную</button>
+            </div>
+        </aside>
+        <main class="admin-main" id="adminPanel">
+            <div class="admin-panel active" data-panel="clans">
+                <h2>🏰 Управление гильдиями</h2>
+                <div id="adminClansContainer"><p class="empty">Загрузка…</p></div>
+            </div>
+            <div class="admin-panel" data-panel="alliances" hidden>
+                <h2>🤝 Союзы</h2>
+                <div id="adminAlliancesContainer"><p class="empty">Загрузка…</p></div>
+            </div>
+            <div class="admin-panel" data-panel="games" hidden>
+                <h2>🎮 Управление играми</h2>
+                <div id="adminGamesContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="ships" hidden>
+                <h2>🚢 Справочник кораблей</h2>
+                <div id="adminShipsContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="resources" hidden>
+                <h2>💲 Настройки ценообразования</h2>
+                <div id="adminResourcesContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="shipcost" hidden>
+                <h2>🔨 Постройка кораблей</h2>
+                <div id="adminShipCostContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="ports" hidden>
+                <h2>⚓ Фракции и порты</h2>
+                <div id="adminPortsContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="map" hidden>
+                <h2>🗺 Настройка карты</h2>
+                <div id="adminMapContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="partners" hidden>
+                <h2>🤝 Партнёры</h2>
+                <div id="adminPartnersContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="faq" hidden>
+                <h2>❓ FAQ</h2>
+                <div id="adminFaqContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="tactics" hidden>
+                <h2>📖 Тактика боя</h2>
+                <div id="adminTacticsContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="online" hidden>
+                <h2>👥 Кто сейчас на сайте</h2>
+                <div id="adminOnlineContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="admins" hidden>
+                <h2>👑 Админы сайта</h2>
+                <div id="adminAdminsContainer"></div>
+            </div>
+            <div class="admin-panel" data-panel="settings" hidden>
+                <h2>⚙️ Настройки сайта</h2>
+                <div id="adminSettingsContainer"></div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- ============ МОДАЛКА: Вход админа ============ -->
+<div id="loginModal" class="modal" hidden>
+    <div class="modal-content">
+        <h3>🔐 Вход администратора</h3>
+        <input type="text" id="loginEmail" placeholder="Email" class="modal-input">
+        <input type="password" id="loginPassword" placeholder="Пароль" class="modal-input">
+        <div class="modal-actions">
+            <button id="loginSubmitBtn" class="big-btn primary">Войти</button>
+            <button id="loginCancelBtn" class="big-btn">Отмена</button>
+        </div>
+        <p id="loginError" class="modal-error"></p>
+    </div>
+</div>
+
+<!-- ============ МОДАЛКА: Вход в гильдию ============ -->
+<div id="clanLoginModal" class="modal" hidden>
+    <div class="modal-content">
+        <h3>🔐 Вход в гильдию</h3>
+        <input type="text" id="clanLoginNickname" placeholder="Ваш никнейм" class="modal-input">
+        <input type="password" id="clanLoginPassword" placeholder="Пароль гильдии" class="modal-input">
+        <div class="modal-actions">
+            <button id="clanLoginSubmitBtn" class="big-btn primary">Войти</button>
+            <button id="clanLoginCancelBtn" class="big-btn">Отмена</button>
+        </div>
+        <p id="clanLoginError" class="modal-error"></p>
+    </div>
+</div>
+
+<!-- ============ ФУТЕР ============ -->
+<footer class="site-footer">
+    <span class="footer-left">Mist Time — Сергеев С.В · v3.0.0</span>
+    <span class="footer-right">{{ game.name }}</span>
+</footer>
+
+<script>
+window.GAME_ID = '{{ game.id }}';
+window.GAME_INFO = {{ game | tojson }};
+</script>
+<script src="/static/js/game.js"></script>
+<script src="/static/js/{{ game.js }}"></script>
+</body>
+</html>

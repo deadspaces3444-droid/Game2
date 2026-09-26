@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World of Sea Battle — Гильдии</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Игры</a>
+    <div class="top-right">
+        <span class="game-badge">⚓ WOSB</span>
+        <button class="icon-btn" id="themeToggle" title="Тема">🌓</button>
+        <button class="icon-btn" id="notifBell" title="Уведомления">🔔<span id="notifCount" style="font-size:10px;position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;border-radius:8px;padding:1px 4px;">0</span></button>
+        <button class="icon-btn" id="onlineBtn" title="Онлайн">🟢</button>
+        <button class="icon-btn" id="adminBtn" title="Админка" hidden>⚙️</button>
+        <button class="icon-btn" id="logoutBtn" title="Выйти" hidden>🚪</button>
+    </div>
+
+    <!-- Notif panel -->
+    <div class="notif-panel" id="notifPanel" hidden></div>
+
+    <!-- HOME SCREEN -->
+    <div class="screen" id="screen-home">
+        <div class="home-wrap">
+            <!-- Hero -->
+            <div class="hero-video" style="max-width: 900px;">
+                <div class="hero-placeholder">⚓</div>
+                <div class="hero-overlay"></div>
+                <div class="hero-text">
+                    <h1>⚔️ Добро пожаловать</h1>
+                    <p>Выбери свою гильдию, чтобы ознакомиться с правилами</p>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row" id="statsRow"></div>
+
+            <!-- Clans -->
+            <div class="clans-header">
+                <h2 class="section-title">🏰 Гильдии</h2>
+                <button class="icon-btn clans-add-btn" id="addClanBtn" title="Добавить гильдию" hidden>➕</button>
+            </div>
+            <div class="clan-grid" id="clanGrid"></div>
+
+            <!-- Map -->
+            <h2 class="section-title">🗺 Карта мира</h2>
+            <div class="content-section">
+                <div class="flex gap-8 wrap">
+                    <button class="map-view-btn active" data-view="detailed" id="mapDetailedBtn">📍 С маркерами</button>
+                    <button class="map-view-btn" data-view="clean" id="mapCleanBtn">🧭 Чистая</button>
+                </div>
+                <div class="map-preview" id="mapPreview">
+                    <div class="map-placeholder">🗺 Карта появится здесь</div>
+                </div>
+                <p class="hint" id="mapHint">💡 Колёсико — приблизить, ЛКМ — перетащить</p>
+            </div>
+
+            <!-- Ship cost calculator -->
+            <h2 class="section-title">🔨 Стоимость постройки корабля</h2>
+            <div class="content-section">
+                <div class="calc-grid">
+                    <div class="calc-controls">
+                        <div>
+                            <label>🚢 Корабль:</label>
+                            <select id="scShipSelect"><option value="">— Выберите —</option></select>
+                        </div>
+                        <div>
+                            <label>⚓ Город:</label>
+                            <select id="scCitySelect"><option value="">— Любой —</option></select>
+                        </div>
+                        <div>
+                            <label>🏴 Фракция:</label>
+                            <select id="scFactionSelect"><option value="">— Любая —</option></select>
+                        </div>
+                    </div>
+                    <div id="scEmpty" class="empty">Выберите корабль, чтобы увидеть стоимость постройки.</div>
+                    <div id="scContent" hidden>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead><tr><th>Ресурс</th><th>Кол-во</th><th>Цена за ед.</th><th>Сумма</th></tr></thead>
+                                <tbody id="scTbody"></tbody>
+                            </table>
+                        </div>
+                        <div class="flex" style="justify-content:space-between; margin-top: 16px; padding: 16px; background: var(--panel); border-radius: 12px; border: 1px solid var(--border);">
+                            <div>Базовая стоимость: <span class="gold-text" id="scBase">0</span> 🪙</div>
+                            <div>Скидки: <span class="green-text" id="scDiscount">−0</span> 🪙</div>
+                            <div style="font-size:18px;">Итого: <span class="gold-text" id="scTotal">0</span> 🪙</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trade market -->
+            <h2 class="section-title">🪙 Гильдейский рынок</h2>
+            <div class="content-section">
+                <h3>📣 Биржа заявок</h3>
+                <div class="trade-market">
+                    <div class="tm-trade-box tm-box-buy">
+                        <div class="tm-box-icon">🛒</div>
+                        <div class="tm-box-title">Золото на покупку</div>
+                        <div class="tm-box-stat" id="buyTotal">0 🪙</div>
+                        <div class="tm-box-count" id="buyCount">0 заявок</div>
+                    </div>
+                    <div class="tm-trade-box tm-box-sell">
+                        <div class="tm-box-icon">💰</div>
+                        <div class="tm-box-title">Золото на продажу</div>
+                        <div class="tm-box-stat" id="sellTotal">0 🪙</div>
+                        <div class="tm-box-count" id="sellCount">0 заявок</div>
+                    </div>
+                </div>
+
+                <!-- New trade form -->
+                <div class="tm-form" style="margin-top: 20px;">
+                    <h3>📝 Новая заявка</h3>
+                    <div class="flex gap-8 wrap">
+                        <button class="tm-type-btn active" data-type="buy" id="tmTypeBuy">🛒 Покупка</button>
+                        <button class="tm-type-btn" data-type="sell" id="tmTypeSell">💰 Продажа</button>
+                    </div>
+                    <div class="tm-form-row">
+                        <div>
+                            <label>Гильдия</label>
+                            <select id="tmClan"><option value="">— Выберите —</option></select>
+                        </div>
+                        <div>
+                            <label>Категория</label>
+                            <select id="tmCategory"></select>
+                        </div>
+                    </div>
+                    <div class="tm-form-row">
+                        <div>
+                            <label>Название *</label>
+                            <input type="text" id="tmName" placeholder="Что продаёте/покупаете">
+                        </div>
+                        <div>
+                            <label>Цена за ед. *</label>
+                            <input type="number" id="tmPrice" placeholder="0" min="0">
+                        </div>
+                        <div>
+                            <label>Количество *</label>
+                            <input type="number" id="tmQty" placeholder="1" min="1" value="1">
+                        </div>
+                    </div>
+                    <div class="tm-form-row">
+                        <div>
+                            <label>Порт (необязательно)</label>
+                            <input type="text" id="tmPort" placeholder="Город">
+                        </div>
+                        <div>
+                            <label>Ваш ник *</label>
+                            <input type="text" id="tmAuthor" placeholder="Ваш ник">
+                        </div>
+                    </div>
+                    <div>
+                        <label>Итого золота</label>
+                        <div class="gold-text" style="font-size:20px;" id="tmTotal">0 🪙</div>
+                    </div>
+                    <div>
+                        <label>Примечание</label>
+                        <textarea id="tmNote" placeholder="Дополнительная информация"></textarea>
+                    </div>
+                    <button class="big-btn primary" id="tmPublish">📨 Опубликовать заявку</button>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex gap-8 wrap" style="margin-top: 20px;">
+                    <input type="text" id="tmSearch" placeholder="🔍 Поиск..." style="flex:1; min-width:200px;">
+                    <select id="tmSort">
+                        <option value="new">Сначала новые</option>
+                        <option value="old">Сначала старые</option>
+                        <option value="price-asc">Цена ↑</option>
+                        <option value="price-desc">Цена ↓</option>
+                    </select>
+                    <label style="display:flex;align-items:center;gap:6px;">
+                        <input type="checkbox" id="tmOnlyMine"> Только мои
+                    </label>
+                </div>
+                <div class="flex gap-8 wrap" id="tmCatFilters"></div>
+
+                <!-- Listings -->
+                <h3>📋 Доска заявок</h3>
+                <div id="tmListings" class="admin-list"></div>
+            </div>
+
+            <!-- Resources -->
+            <h2 class="section-title">📦 Ресурсы — справочник цен</h2>
+            <div class="content-section">
+                <h3>Базовые цены на ресурсы</h3>
+                <div class="res-table-wrap">
+                    <table class="res-table">
+                        <thead><tr><th>Ресурс</th><th>Цена</th><th>Обновлено</th></tr></thead>
+                        <tbody id="resTableBody"></tbody>
+                    </table>
+                </div>
+                <p class="hint">💡 Цены задаются в админ-панели</p>
+            </div>
+
+            <!-- Ship builder calculator -->
+            <h2 class="section-title">🔧 Калькулятор сборки корабля</h2>
+            <div class="content-section">
+                <div class="calc-grid">
+                    <div class="calc-controls">
+                        <div>
+                            <label>🎯 Собираю корабль:</label>
+                            <select id="buildShipSelect"><option value="">— Выберите —</option></select>
+                        </div>
+                        <button class="big-btn primary" id="buildAddComp">➕ Добавить компонент</button>
+                        <button class="big-btn secondary" id="buildClear">🗑 Очистить</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead><tr><th>Компонент</th><th>Кол-во</th><th>Средняя цена</th><th>Итого</th></tr></thead>
+                            <tbody id="buildTbody">
+                                <tr><td colspan="4" class="empty">Нет компонентов. Нажми «➕ Добавить компонент».</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex" style="justify-content: space-between; padding: 16px; background: var(--panel); border-radius: 12px;">
+                        <div>Позиций: <b id="buildItems">0</b></div>
+                        <div>💰 Средняя стоимость: <span class="gold-text" id="buildTotal">0</span> 🪙</div>
+                    </div>
+                    <div class="flex gap-8">
+                        <button class="big-btn primary" id="buildRecalc">🔄 Пересчитать</button>
+                        <button class="big-btn secondary" id="buildCopy">📋 Скопировать результат</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application form -->
+            <h2 class="section-title">📝 Подать заявку в гильдию</h2>
+            <div class="content-section">
+                <p class="hint">Заполни форму — совет рассмотрит заявку и свяжется с тобой.</p>
+                <div class="admin-form">
+                    <div class="tm-form-row">
+                        <div><label>Никнейм *</label><input type="text" id="appNick" placeholder="Ваш игровой ник"></div>
+                        <div><label>Возраст</label><input type="text" id="appAge" placeholder="Ваш возраст"></div>
+                    </div>
+                    <div class="tm-form-row">
+                        <div><label>Опыт в игре</label><input type="text" id="appExp" placeholder="Опыт"></div>
+                        <div><label>Связь (Discord/Telegram)</label><input type="text" id="appContact" placeholder="Контакт"></div>
+                    </div>
+                    <div><label>Какая гильдия интересует</label><select id="appClan"><option value="">— Выберите —</option></select></div>
+                    <div><label>Почему хотите вступить? *</label><textarea id="appWhy" placeholder="Расскажите о себе"></textarea></div>
+                    <button class="big-btn primary" id="appSubmit">📨 Отправить заявку</button>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <h2 class="section-title">❓ Часто задаваемые вопросы</h2>
+            <div class="content-section">
+                <div class="faq-list" id="faqList"></div>
+            </div>
+
+            <!-- Partners -->
+            <h2 class="section-title">🤝 Партнёры и Реклама</h2>
+            <div class="content-section">
+                <div class="partners-list" id="partnersList"></div>
+            </div>
+
+            <!-- Credits -->
+            <div class="content-section" style="text-align: center; color: var(--muted); margin-top: 40px;">
+                <h3>🙏 Благодарности</h3>
+                <p>Спасибо всем участникам гильдий АОВ и -К- за активность и поддержку проекта.</p>
+                <p style="margin-top: 8px;">Mist Time — Сергеев С.В</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="site-footer">
+        <span class="footer-left">Mist Time — Сергеев С.В</span>
+        <span class="footer-right">v3.0.0</span>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal" hidden>
+        <div class="modal">
+            <h2>🔐 Вход в гильдию</h2>
+            <div class="modal-field">
+                <label>Пароль гильдии</label>
+                <input type="password" id="loginPassword" placeholder="Введите пароль">
+            </div>
+            <div class="modal-actions">
+                <button class="secondary" onclick="document.getElementById('loginModal').hidden = true">Отмена</button>
+                <button id="loginSubmit">Войти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal-overlay" id="adminLoginModal" hidden>
+        <div class="modal">
+            <h2>🔐 Вход администратора</h2>
+            <div class="modal-field">
+                <label>Email</label>
+                <input type="text" id="adminLoginEmail" placeholder="admin@wosb.ru">
+            </div>
+            <div class="modal-field">
+                <label>Пароль</label>
+                <input type="password" id="adminLoginPass" placeholder="Пароль">
+            </div>
+            <div class="modal-actions">
+                <button class="secondary" onclick="document.getElementById('adminLoginModal').hidden = true">Отмена</button>
+                <button id="adminLoginSubmit">Войти</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/wosb.js"></script>
+</body>
+</html>
